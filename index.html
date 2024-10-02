@@ -1,0 +1,633 @@
+<?php
+
+session_start();
+
+if (isset($_SESSION["user_id"])) {
+	
+	$mysqli = require __DIR__ . "/database.php";
+	$sql = "SELECT * FROM user
+			WHERE id = {$_SESSION["user_id"]}";
+			
+	$result = $mysqli->query($sql);
+	
+	$user = $result->fetch_assoc();
+}
+
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	
+    <title>Home</title>
+	
+	<style>
+	
+	
+	
+	body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 50%;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+.container2 {
+	width: 50%;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+
+/* Login and Registration Forms */
+#login-section, #register-section {
+    margin-bottom: 30px;
+}
+
+#login-section h2, #register-section h2 {
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+#login-section form, #register-section form {
+    display: flex;
+    flex-direction: column;
+}
+
+#login-section form input, #register-section form input {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#login-section form button, #register-section form button {
+    padding: 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#login-section a, #register-section a {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+    margin-top: 10px;
+}
+
+/* User Timeline */
+header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+header a {
+    font-size: 14px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.post-box {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.post-box textarea {
+    width: 90%;
+    height: 60px;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: none;
+}
+
+
+.profile-picture {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-picture img {
+    display: block;
+    width: 150px; /* Adjust width as needed */
+    height: 150px; /* Adjust height as needed */
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.upload-btn {
+    position: absolute;
+    bottom: 0; /* Position at the bottom of the container */
+    right: 0; /* Align to the right */
+    background: #fff; /* Background color for the button */
+    border: 2px solid #1e90ff; /* Border color matching design */
+    border-radius: 50%;
+    width: 40px; /* Button width */
+    height: 40px; /* Button height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2em; /* Icon size */
+    color: #1e90ff; /* Icon color */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.upload-btn:hover {
+    background-color: #1e90ff; /* Change background on hover */
+    color: #fff; /* Change icon color on hover */
+}
+
+
+
+
+.post-box button {
+	width: 90%;
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.posts {
+    margin-bottom: 20px;
+}
+
+.posts h2 {
+    margin-bottom: 10px;
+    font-size: 18px;
+    color: #333;
+}
+
+.post {
+    background-color: #f9f9f9;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+
+.post p {
+    margin: 0 0 5px 0;
+    font-size: 16px;
+    color: #333;
+}
+
+.post span {
+    font-size: 12px;
+    color: #777;
+}
+
+.search-users h2 {
+    display: flex;
+    align-items: center;
+    font-size: 1.5em; /* Adjust font size as needed */
+    margin-bottom: 20px;
+}
+
+.search-users h2 i {
+    font-size: 1.5em; /* Adjust icon size as needed */
+    margin-right: 10px; /* Space between icon and text */
+    color: #1e90ff; /* Icon color, optional */
+}
+
+.search-users input {
+    width: calc(100% - 110px); /* Adjust to fit with button */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    margin-right: 10px; /* Space between input and button */
+}
+
+.search-users button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #1e90ff;
+    color: #fff;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s;
+	margin-top: 20px;
+}
+
+.search-users button:hover {
+    background-color: #1c86ee;
+}
+
+
+/* Search Results */
+.search-results {
+    margin-top: 20px;
+}
+
+.search-results h2 {
+    display: flex;
+    align-items: center;
+    font-size: 1.5em; /* Adjust as needed */
+    margin-bottom: 20px;
+}
+
+.search-results h2 i {
+    font-size: 1.5em; /* Adjust icon size as needed */
+    margin-right: 10px; /* Space between icon and text */
+    color: #1e90ff; /* Icon color */
+}
+
+.result {
+    background-color: #f9f9f9; /* Light background color */
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    padding: 15px;
+    margin-bottom: 15px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.result:hover {
+    background-color: #e0e0e0; /* Slightly darker on hover */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
+}
+
+.result p {
+    margin: 5px 0; /* Space between lines */
+    font-size: 1em; /* Adjust font size */
+}
+
+.result a.view-profile {
+    display: inline-block;
+    margin-top: 10px;
+    font-size: 1em;
+    color: #1e90ff; /* Link color */
+    text-decoration: none;
+    border: 1px solid #1e90ff; /* Border color */
+    border-radius: 5px;
+    padding: 5px 10px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.result a.view-profile:hover {
+    background-color: #1e90ff; /* Background color on hover */
+    color: #fff; /* Text color on hover */
+}
+
+
+.post {
+	
+    align-items: center;
+}
+
+.post img {
+	border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    margin-right: 10px;
+}
+
+
+
+.posts {
+    width: 100%;
+    max-width: 600px; /* Adjust as needed */
+    margin: 0 auto;
+}
+
+/* Posts Container */
+.posts {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+/* Post Styling */
+.post {
+    background-color: #ffffff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Post Header */
+.post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.post-header img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 10px;
+}
+
+.post-header h5 {
+    margin: 0;
+    font-size: 18px;
+    color: #333;
+}
+
+/* Post Content */
+.post p {
+    font-size: 16px;
+    color: #555;
+    margin: 10px 0;
+    line-height: 1.5;
+}
+
+/* Post Footer */
+.post-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px;
+    border-top: 1px solid #eee;
+    padding-top: 10px;
+}
+
+.interaction span {
+    display: inline-flex;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.interaction span i {
+    margin-right: 5px;
+    font-size: 18px;
+}
+
+/* Hover Effects */
+.interaction span:hover {
+    color: #007BFF;
+}
+
+.post-date {
+    font-size: 14px;
+    color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 600px) {
+    .posts {
+        padding: 15px;
+    }
+
+    .post {
+        padding: 12px;
+    }
+
+    .post-header img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .post-header h5 {
+        font-size: 16px;
+    }
+
+    .post p {
+        font-size: 14px;
+    }
+
+    .interaction span {
+        font-size: 14px;
+    }
+
+    .interaction span i {
+        font-size: 16px;
+    }
+
+    .post-date {
+        font-size: 12px;
+    }
+}
+
+
+
+/* Navigation Bar Styles */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #333;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 8px; /* Optional: add a slight rounding to the navbar */
+    margin-bottom: 20px; /* Add some space below the navbar */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand h1 {
+    margin: 0;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+.navbar-icons {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-icons i {
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+
+.navbar-icons i:hover {
+    color: #1e90ff;
+}
+
+
+.post-image {
+    margin-top: 10px;
+}
+
+.post-image img {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    max-height: 800px; /* Ensure this is large enough */
+    object-fit: cover;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+
+.posts h2 {
+    display: flex;
+    align-items: center;
+    font-size: 1.5em; /* Adjust font size as needed */
+    margin-bottom: 20px;
+}
+
+.posts h2 i {
+    font-size: 1.5em; /* Adjust icon size as needed */
+    margin-right: 10px; /* Space between icon and text */
+    color: #1e90ff; /* Icon color, optional */
+}
+	
+	
+	
+	
+	</style>
+</head>
+<body>
+	
+	
+	
+	<div class="container2">
+		<div class="navbar">
+			<div class="navbar-brand">
+				<h1>MySocial</h1>
+			</div>
+			<div class="navbar-icons">
+				<i class="fas fa-plus"></i>
+				<i class="fas fa-comments"></i>
+				<i class="fas fa-bell"></i>
+			</div>
+		</div>
+
+        <!-- User Timeline -->
+        <section id="timeline-section">
+            <header>
+			<?php if (isset($user)): ?>
+	
+				<h1>Welcome!, <?= htmlspecialchars($user["name"]) ?></h1>
+				<div class="profile-picture">
+					<img src="girl.webp" alt="Profile Picture">
+					<button class="upload-btn">
+						<i class="fas fa-camera"></i>
+					</button>
+				</div>
+			</header>
+
+
+            <div class="post-box">
+                <textarea placeholder="Share something..."></textarea>
+                <button type="submit">Post</button>
+            </div>
+
+            <section class="posts">
+				 <h2>
+					<i class="fas fa-home"></i> Your Feed
+				</h2>
+
+				
+				<div class="post">
+					<div class="post-header">
+						<img src="dp2.jpg" alt="Profile Picture">
+						<h5>James Smith</h5>
+					</div>
+					<p>Hello Everyone, jesus is coming back!.&#10014</p>
+					<div class="post-footer">
+						<div class="interaction">
+							<span><i class="fas fa-thumbs-up"></i> 120</span>
+							<span><i class="fas fa-comment"></i> 45</span>
+						</div>
+						<span class="post-date">2024-07-24 12:43:23</span>
+					</div>
+				</div>
+				
+				<div class="post">
+					<div class="post-header">
+						<img src="dp3.jpeg" alt="Profile Picture">
+						<h5>Lauren Foster</h5>
+					</div>
+					<p>hi Friends, with God all things are possible.&#128591</p>
+					<div class="post-footer">
+						<div class="interaction">
+							<span><i class="fas fa-thumbs-up"></i> 85</span>
+							<span><i class="fas fa-comment"></i> 30</span>
+						</div>
+						<span class="post-date">2024-07-24 12:37:22</span>
+					</div>
+				</div>
+				
+				<div class="post">
+					<div class="post-header">
+						<img src="car.jpg" alt="Profile Picture">
+						<h5>Emily Johnson</h5>
+					</div>
+					<p>Enjoying the beautiful sunset!&#129402</p>
+					<div class="post-image">
+						<img src="sunset.jpg" alt="Sunset Image">
+					</div>
+					<div class="post-footer">
+						<div class="interaction">
+							<span><i class="fas fa-thumbs-up"></i> 200</span>
+							<span><i class="fas fa-comment"></i> 60</span>
+						</div>
+						<span class="post-date">2024-08-22 18:21:45</span>
+					</div>
+				</div>
+			</section>
+
+
+            <section class="search-users">
+				<h2>
+					<i class="fas fa-search"></i> Search Users
+				</h2>
+				<input type="text" placeholder="Search by name or email">
+				<button type="submit">Search</button>
+			</section>
+
+
+            <section class="search-results">
+				<h2>
+					<i class="fas fa-search"></i> Search Results
+				</h2>
+				<div class="result">
+					<p><strong>Name:</strong> Rasmus Lerdorf</p>
+					<p><strong>Email:</strong> Lerdorfrasmus001@gmail.com</p>
+					<a href="#" class="view-profile">View Profile</a>
+				</div>
+			</section>
+
+        </section>
+    </div>
+	
+	<p><a href="logout.php">Log out</a></p>
+	<?php else: ?>
+	
+		<p><a href="login.php">Log in</a> or <a href="signup.html">sign up</a></p>
+		
+	<?php endif; ?>
+	
+		
+		
+</body>
+</html>
